@@ -4,7 +4,7 @@ So, you've dropped some columns after one-hot encoding.  What if you need the va
 
 ### The Dataset
 
-Info provided when I downloaded it was:
+Info provided when I [downloaded it](https://college.cengage.com/mathematics/brase/understandable_statistics/7e/students/datasets/mlr/frames/frame.html) was:
 
 Thunder Basin Antelope Study
 
@@ -19,6 +19,7 @@ The data (X1, X2, X3, X4) are for each year.
 ```python
 import pandas as pd
 import statsmodels.api as sm
+from sklearn.preprocessing import OneHotEncoder
 ```
 
 
@@ -58,7 +59,11 @@ One-hot encode the "winter severity index"
 
 
 ```python
-winter_severity_df = pd.get_dummies(antelope_df["winter_severity_index"].apply(int))
+ohe = OneHotEncoder(categories=[[1,2,3,4,5]])
+antelope_df["winter_severity_index"] = antelope_df["winter_severity_index"].apply(int).astype('category')
+winter_severity_ohe_array = ohe.fit_transform(antelope_df[["winter_severity_index"]]).toarray()
+winter_severity_df = pd.DataFrame(winter_severity_ohe_array,columns=ohe.categories_[0])
+
 antelope_df = antelope_df.join(winter_severity_df)
 antelope_df = antelope_df.drop("winter_severity_index", axis=1)
 ```
@@ -109,11 +114,11 @@ antelope_df
       <td>9.2</td>
       <td>0</td>
       <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>1</th>
@@ -121,11 +126,11 @@ antelope_df
       <td>8.7</td>
       <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>2</th>
@@ -133,11 +138,11 @@ antelope_df
       <td>7.2</td>
       <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>3</th>
@@ -145,11 +150,11 @@ antelope_df
       <td>8.5</td>
       <td>0</td>
       <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>4</th>
@@ -157,11 +162,11 @@ antelope_df
       <td>9.6</td>
       <td>0</td>
       <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>5</th>
@@ -169,11 +174,11 @@ antelope_df
       <td>6.8</td>
       <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>6</th>
@@ -181,11 +186,11 @@ antelope_df
       <td>9.7</td>
       <td>0</td>
       <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>7</th>
@@ -193,11 +198,11 @@ antelope_df
       <td>7.9</td>
       <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
     </tr>
   </tbody>
 </table>
@@ -235,8 +240,8 @@ print(results1.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.881
     Model:                            OLS   Adj. R-squared:                  0.862
     Method:                 Least Squares   F-statistic:                     44.56
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):           0.000547
-    Time:                        17:07:09   Log-Likelihood:                 2.2043
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):           0.000547
+    Time:                        18:43:29   Log-Likelihood:                 2.2043
     No. Observations:                   8   AIC:                           -0.4086
     Df Residuals:                       6   BIC:                           -0.2498
     Df Model:                           1                                         
@@ -287,8 +292,8 @@ print(results2.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.888
     Model:                            OLS   Adj. R-squared:                  0.844
     Method:                 Least Squares   F-statistic:                     19.88
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):            0.00417
-    Time:                        17:09:09   Log-Likelihood:                 2.4459
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):            0.00417
+    Time:                        18:43:29   Log-Likelihood:                 2.4459
     No. Observations:                   8   AIC:                             1.108
     Df Residuals:                       5   BIC:                             1.346
     Df Model:                           2                                         
@@ -343,8 +348,8 @@ print(results3.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.888
     Model:                            OLS   Adj. R-squared:                  0.844
     Method:                 Least Squares   F-statistic:                     19.88
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):            0.00417
-    Time:                        17:10:18   Log-Likelihood:                 2.4459
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):            0.00417
+    Time:                        18:43:30   Log-Likelihood:                 2.4459
     No. Observations:                   8   AIC:                             1.108
     Df Residuals:                       5   BIC:                             1.346
     Df Model:                           2                                         
@@ -430,8 +435,8 @@ print(results4.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.982
     Model:                            OLS   Adj. R-squared:                  0.938
     Method:                 Least Squares   F-statistic:                     22.15
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):             0.0438
-    Time:                        17:34:26   Log-Likelihood:                 9.8065
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):             0.0438
+    Time:                        18:43:30   Log-Likelihood:                 9.8065
     No. Observations:                   8   AIC:                            -7.613
     Df Residuals:                       2   BIC:                            -7.136
     Df Model:                           5                                         
@@ -491,8 +496,8 @@ print(results5.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.982
     Model:                            OLS   Adj. R-squared:                  0.938
     Method:                 Least Squares   F-statistic:                     22.15
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):             0.0438
-    Time:                        17:40:20   Log-Likelihood:                 9.8065
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):             0.0438
+    Time:                        18:43:30   Log-Likelihood:                 9.8065
     No. Observations:                   8   AIC:                            -7.613
     Df Residuals:                       2   BIC:                            -7.136
     Df Model:                           5                                         
@@ -536,8 +541,8 @@ print(results6.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.982
     Model:                            OLS   Adj. R-squared:                  0.938
     Method:                 Least Squares   F-statistic:                     22.15
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):             0.0438
-    Time:                        17:41:18   Log-Likelihood:                 9.8065
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):             0.0438
+    Time:                        18:43:30   Log-Likelihood:                 9.8065
     No. Observations:                   8   AIC:                            -7.613
     Df Residuals:                       2   BIC:                            -7.136
     Df Model:                           5                                         
@@ -581,8 +586,8 @@ print(results7.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.982
     Model:                            OLS   Adj. R-squared:                  0.938
     Method:                 Least Squares   F-statistic:                     22.15
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):             0.0438
-    Time:                        18:13:14   Log-Likelihood:                 9.8065
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):             0.0438
+    Time:                        18:43:30   Log-Likelihood:                 9.8065
     No. Observations:                   8   AIC:                            -7.613
     Df Residuals:                       2   BIC:                            -7.136
     Df Model:                           5                                         
@@ -626,8 +631,8 @@ print(results8.summary())
     Dep. Variable:      spring_fawn_count   R-squared:                       0.982
     Model:                            OLS   Adj. R-squared:                  0.938
     Method:                 Least Squares   F-statistic:                     22.15
-    Date:                Tue, 03 Dec 2019   Prob (F-statistic):             0.0438
-    Time:                        17:42:06   Log-Likelihood:                 9.8065
+    Date:                Wed, 04 Dec 2019   Prob (F-statistic):             0.0438
+    Time:                        18:43:30   Log-Likelihood:                 9.8065
     No. Observations:                   8   AIC:                            -7.613
     Df Residuals:                       2   BIC:                            -7.136
     Df Model:                           5                                         
@@ -708,7 +713,7 @@ print(results9.summary())
     Model:                            OLS   Adj. R-squared:                  0.901
     Method:                 Least Squares   F-statistic:                     11.59
     Date:                Wed, 04 Dec 2019   Prob (F-statistic):              0.221
-    Time:                        10:25:25   Log-Likelihood:                 10.702
+    Time:                        18:43:30   Log-Likelihood:                 10.702
     No. Observations:                   8   AIC:                            -7.405
     Df Residuals:                       1   BIC:                            -6.849
     Df Model:                           6                                         
@@ -757,7 +762,7 @@ print(results10.summary())
     Model:                            OLS   Adj. R-squared:                  0.901
     Method:                 Least Squares   F-statistic:                     11.59
     Date:                Wed, 04 Dec 2019   Prob (F-statistic):              0.221
-    Time:                        10:27:25   Log-Likelihood:                 10.702
+    Time:                        18:43:30   Log-Likelihood:                 10.702
     No. Observations:                   8   AIC:                            -7.405
     Df Residuals:                       1   BIC:                            -6.849
     Df Model:                           6                                         
